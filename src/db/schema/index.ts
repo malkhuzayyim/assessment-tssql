@@ -4,6 +4,7 @@ import {
   text,
   uniqueIndex,
   integer,
+  real,
 } from "drizzle-orm/sqlite-core";
 const boolean = (col: string) => integer(col, { mode: "boolean" });
 const timestamp = (col: string) => integer(col, { mode: "timestamp" });
@@ -94,18 +95,38 @@ export const teamsRelations = relations(teams, ({ one }) => ({
   }),
 }));
 
-// export const plans = sqliteTable("plans", {
-// todo: add plans table schema
-// });
+export const plans = sqliteTable("plans", {
+  id: integer("id").primaryKey().notNull(),
+  name: text("name").notNull(),
+  price: real("price").notNull(), 
+  description: text("description"), 
+  defaultUsers: integer("defaultUsers"),
+  pricePerUser: real("pricePerUser")
+});
 
-// export const subscriptions = sqliteTable("subscriptions", {
-//   // todo: add subscriptions table schema
-// });
+export const subscriptions = sqliteTable("subscriptions", {
+  id: integer("id").primaryKey().notNull(),
+  teamId: integer("teamId").notNull()
+    .references(() => teams.id, { onDelete: "cascade", onUpdate: "restrict" }),
+  planId: integer("planId").notNull()
+    .references(() => plans.id, { onDelete: "restrict", onUpdate: "restrict" }),
+  startDate: timestamp("startDate").notNull(),  // When the subscription started
+  isActive: boolean("isActive").notNull(),
+});
 
-// export const orders = sqliteTable("orders", {
-//   // todo: add orders table schema
-// });
+export const orders = sqliteTable("orders", {
+  id: integer("id").primaryKey().notNull(),
+  subscriptionId: integer("subscriptionId").notNull()
+    .references(() => subscriptions.id, { onDelete: "cascade", onUpdate: "restrict" }),
+  amount: real("amount").notNull(),  
+  paidDate: timestamp("paidDate").notNull(),
+  status: text("status").notNull()
+});
 
-// export const subscriptionActivations = sqliteTable("subscriptionActivations", {
-//   // todo: add subscriptionActivations table schema
-// });
+export const subscriptionActivations = sqliteTable("subscriptionActivations", {
+  id: integer("id").primaryKey().notNull(),
+  subscriptionId: integer("subscriptionId").notNull()
+    .references(() => subscriptions.id, { onDelete: "cascade", onUpdate: "restrict" }),
+  activeDate: timestamp("activeDate").notNull(),  
+  endDate: timestamp("endDate")
+});

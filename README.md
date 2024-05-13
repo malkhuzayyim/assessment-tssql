@@ -80,4 +80,50 @@ If you were to introduce two more props to plans:
 How would this affect the current plan upgrade calculation?
 
 ### answer here:
----
+
+Introducing two additional properties—`defaultUsers` and `pricePerUser`—to the `plans` table can significantly affect the calculations related to upgrading plans, especially when calculating the prorated upgrade cost. Here's a detailed exploration of how these properties can be integrated and their impact:
+
+#### New Properties Description
+- **`defaultUsers`**: This property indicates the number of users included in the plan by default, which is part of the base offering of the plan.
+- **`pricePerUser`**: This represents the cost per additional user that exceeds the number included by the `defaultUsers` property.
+
+#### Impact on Plan Upgrade Calculation
+When upgrading from one plan to another, particularly mid-cycle, the cost calculation needs to consider not just the base price difference but also the difference in value provided by any change in the `defaultUsers` count and the cost associated with additional users.
+
+##### Scenario and Calculation Approach
+Assume a scenario where a customer wants to upgrade their subscription in the middle of a billing cycle from Plan A to Plan B:
+
+- **Plan A**: 
+  - Price: $100 
+  - `defaultUsers`: 5 
+  - `pricePerUser`: $10
+- **Plan B**: 
+  - Price: $200
+  - `defaultUsers`: 10
+  - `pricePerUser`: $15
+
+If a customer has 7 users, the prorated upgrade cost needs to consider:
+- The difference in the base plan costs.
+- The difference in costs due to user count changes, adjusted for the number of days remaining in the cycle.
+
+**Step-by-Step Calculation**:
+1. **Calculate the base price difference** for the remaining days in the cycle:
+   - Base Price Difference = (Plan B Price - Plan A Price)
+   - Pro-rata this difference for the remaining days in the cycle.
+
+2. **Adjust for user count**:
+   - For Plan A, since 7 users are registered and 5 are included, there is an additional charge for 2 users.
+   - For Plan B, 10 users are included by default, so no additional user charge.
+   - Calculate the extra cost incurred due to additional users in Plan A that would no longer apply in Plan B, again prorated for the remaining days in the cycle.
+
+**Formula**:
+`Total Upgrade Cost = (Base Price Difference * (Days Remaining / Total Days in Month)) +
+((Extra Users Cost in Plan A - Extra Users Cost in Plan B) * (Days Remaining / Total Days in Month))`
+
+Where:
+- `Extra Users Cost in Plan A` = (User Count - defaultUsers in Plan A) * pricePerUser in Plan A
+- `Extra Users Cost in Plan B` = (User Count - defaultUsers in Plan B) * pricePerUser in Plan B (if positive)
+
+#### Conclusion
+Adding `defaultUsers` and `pricePerUser` introduces complexity into the calculation but allows the pricing model to be more flexible and potentially more fair, as it adjusts to the actual usage and needs of the customer. The calculation now needs to handle varying user counts and their costs dynamically, adapting to what each plan specifically offers. This approach ensures that customers are charged fairly based on their actual usage relative to what their plans allow.
+
