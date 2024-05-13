@@ -4,6 +4,7 @@ import {
   text,
   uniqueIndex,
   integer,
+  real
 } from "drizzle-orm/sqlite-core";
 const boolean = (col: string) => integer(col, { mode: "boolean" });
 const timestamp = (col: string) => integer(col, { mode: "timestamp" });
@@ -21,6 +22,7 @@ export const users = sqliteTable(
     locale: text("locale").notNull(),
     timezone: text("timezone"),
     isAdmin: boolean("isAdmin").default(false).notNull(),
+    role: text("role").notNull(),
   },
   (table) => {
     return {
@@ -94,18 +96,34 @@ export const teamsRelations = relations(teams, ({ one }) => ({
   }),
 }));
 
-// export const plans = sqliteTable("plans", {
-// todo: add plans table schema
-// });
+export const plans = sqliteTable("plans", {
+  id: integer("id").primaryKey().notNull(),
+  name: text("name").notNull(),
+  price: integer("price").notNull(), // assuming price is stored as an integer
+  defaultUsers: integer("defaultUsers").default(0).notNull(),
+  pricePerUser: integer("pricePerUser").default(0).notNull(),
+});
 
-// export const subscriptions = sqliteTable("subscriptions", {
-//   // todo: add subscriptions table schema
-// });
+export const subscriptions = sqliteTable("subscriptions", {
+  id: integer("id").primaryKey().notNull(),
+  userId: integer("userId").notNull().references(() => users.id, { onDelete: "restrict", onUpdate: "restrict" }),
+  planId: integer("planId").notNull().references(() => plans.id, { onDelete: "restrict", onUpdate: "restrict" }),
+  createdAt: timestamp("createdAt").notNull(),
+  updatedAt: timestamp("updatedAt").notNull(),
+  status: text("status").notNull(), // e.g., 'active', 'cancelled'
+});
 
-// export const orders = sqliteTable("orders", {
-//   // todo: add orders table schema
-// });
+export const orders = sqliteTable("orders", {
+  id: integer("id").primaryKey().notNull(),
+  subscriptionId: integer("subscriptionId").notNull().references(() => subscriptions.id, { onDelete: "restrict", onUpdate: "restrict" }),
+  createdAt: timestamp("createdAt").notNull(),
+  amount: real("amount").notNull(), // Assuming amount is stored as an integer
+  status: text("status").notNull(), // e.g., 'pending', 'paid'
+});
 
-// export const subscriptionActivations = sqliteTable("subscriptionActivations", {
-//   // todo: add subscriptionActivations table schema
-// });
+export const subscriptionActivations = sqliteTable("subscriptionActivations", {
+  id: integer("id").primaryKey().notNull(),
+  orderId: integer("orderId").notNull().references(() => orders.id, { onDelete: "restrict", onUpdate: "restrict" }),
+  activatedAt: timestamp("activatedAt").notNull(),
+  expiresAt: timestamp("expiresAt").notNull(),
+});

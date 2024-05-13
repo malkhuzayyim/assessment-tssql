@@ -80,6 +80,7 @@ export const auth = router({
         password: z.string(),
         timezone: z.string(),
         locale: z.string(),
+        role: z.string(),
       })
     )
     .mutation(async ({ input }) => {
@@ -107,6 +108,7 @@ export const auth = router({
           hashedPassword,
           locale,
           timezone,
+          role: "USER" //Default Role is User (Admin can be created manual or via super admin)
         })
         .returning();
       // create random otpCode

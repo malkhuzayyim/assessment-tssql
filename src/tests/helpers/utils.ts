@@ -5,6 +5,7 @@ import { createCallerFactory } from "../../trpc/core";
 import { appRouter } from "../../trpc/router";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import jwt from "jsonwebtoken";
+import { User } from "../../contracts";
 
 interface FastifyRequestWithCookie extends FastifyRequest {
   cookies: { [cookieName: string]: string | undefined };
@@ -32,13 +33,6 @@ export const createAuthenticatedCaller = ({ userId }: { userId: number }) => {
   });
 };
 
-type User = {
-  email: string;
-  password: string;
-  name: string;
-  timezone: string;
-  locale: string;
-};
 export const setupUser = async (user: User) => {
   //register user
   await createCaller({}).auth.register(user);
