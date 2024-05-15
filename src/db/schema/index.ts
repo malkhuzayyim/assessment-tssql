@@ -109,13 +109,22 @@ export const subscriptions = sqliteTable("subscriptions", {
   planId: integer("planId")
     .notNull()
     .references(() => plans.id, { onDelete: "restrict", onUpdate: "restrict" }),
-  isActive: text("boolean").notNull(),
-  cratedAt: timestamp("createAt").notNull(),
+  isActive: boolean("isActive").notNull(),
+  createdAt: timestamp("createdAt").notNull(),
 });
 
-// export const orders = sqliteTable("orders", {
-//   // todo: add orders table schema
-// });
+export const orders = sqliteTable("orders", {
+  id: integer("id").primaryKey().notNull(),
+  subscriptionId: integer("subscriptionId")
+    .notNull()
+    .references(() => subscriptions.id, {
+      onDelete: "cascade",
+      onUpdate: "restrict",
+    }),
+  amount: real("amount").notNull(),
+  paymentStatus: text("paymentStatus").notNull(),
+  createdAt: timestamp("createdAt").notNull(),
+});
 
 // export const subscriptionActivations = sqliteTable("subscriptionActivations", {
 //   // todo: add subscriptionActivations table schema
