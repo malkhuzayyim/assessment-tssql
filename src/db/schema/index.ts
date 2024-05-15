@@ -126,6 +126,14 @@ export const orders = sqliteTable("orders", {
   createdAt: timestamp("createdAt").notNull(),
 });
 
-// export const subscriptionActivations = sqliteTable("subscriptionActivations", {
-//   // todo: add subscriptionActivations table schema
-// });
+export const subscriptionActivations = sqliteTable("subscriptionActivations", {
+  id: integer("id").primaryKey().notNull(),
+  orderId: integer("orderId")
+    .notNull()
+    .references(() => orders.id, {
+      onDelete: "restrict",
+      onUpdate: "restrict",
+    }),
+  activationDate: timestamp("activationDate").notNull(),
+  billingCycle: text("billingCycle", { enum: ["month", "year"] }).notNull(),
+});
