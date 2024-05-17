@@ -2,6 +2,7 @@ import { router, protectedProcedure, trpcError, publicProcedure } from "../../tr
 import { z } from "zod";
 import { db, schema } from "../../db/client";
 import { eq } from "drizzle-orm";
+import { upgradePriceCalculation } from "./model";
 
 export const plans = router({
   create: protectedProcedure
@@ -69,4 +70,42 @@ export const plans = router({
       return [];
     }
   }),
+  calculateUpgradePrice: publicProcedure
+    .input(
+      z.object({
+        currentPlanId: z.number(),
+        newPlanId: z.number(),
+        daysRemaining: z.number(),
+      })
+    )
+    .query(async ({ input }) => {
+      const { currentPlanId, newPlanId, daysRemaining } = input;
+
+      if (currentPlanId === newPlanId) {
+        throw new Error("Plans can not be same.");
+      }
+
+      const newPlan = await db.query.plans.findFirst({
+        where: eq(schema.plans.id, newPlanId),
+      });
+
+      const currentPlan = await db.query.plans.findFirst({
+        where: eq(schema.plans.id, currentPlanId),
+      });
+
+      if (!newPlan) {
+        throw new Error("Invalid a plan to upgrade to.");
+      }
+
+      if (!currentPlan) {
+        throw new Error("Invalid a plan to upgrade from.");
+      }
+
+      const upgradePrice = upgradePriceCalculation({
+        currentPrice: currentPlan.price,
+        newPrice: newPlan.price,
+        daysRemaining,
+      });
+      return { upgradePrice };
+    }),
 });
