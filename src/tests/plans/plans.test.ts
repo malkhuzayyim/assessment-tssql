@@ -219,7 +219,20 @@ describe("plans routes", async () => {
     });
 
     it("should calculate prorated upgrade price correctly", async () => {
+      const adminCaller = createAuthenticatedCaller({ userId: adminId });
+      const currentPlan = { name: "Basic", price: 30 };
+      const newPlan = { name: "Standard", price: 50 };
 
+      const currentPlanInDb = await adminCaller.plans.create(currentPlan);
+      const newPlanPlanInDb = await adminCaller.plans.create(newPlan);
+
+      const upgradePriceResult = await adminCaller.plans.calculateUpgradePrice({
+        currentPlanId: currentPlanInDb!.id,
+        newPlanId: newPlanPlanInDb!.id,
+        daysRemaining: 15,
+      });
+
+      expect(upgradePriceResult!.upgradePrice).toEqual(35);
     });
   });
 });
