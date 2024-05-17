@@ -18,7 +18,7 @@ export const upgradePriceCalculation = ({
   }
 
   const dailyCostCurrentPlan = currentPrice / 30;
- 
+
   const remainingCostCurrentCycle = dailyCostCurrentPlan * daysRemaining;
 
   const upgradeCost = newPrice - remainingCostCurrentCycle;
