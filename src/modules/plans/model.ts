@@ -1,3 +1,5 @@
+import { trpcError } from "../../trpc/core";
+
 export const upgradePriceCalculation = ({
   currentPrice,
   newPrice,
@@ -8,13 +10,18 @@ export const upgradePriceCalculation = ({
   daysRemaining: number;
 }) => {
   if (daysRemaining < 0) {
-    throw new Error("Days remaining cannot be negative.");
+    throw new trpcError({
+      code: "BAD_REQUEST",
+      message: "Days remaining cannot be negative.",
+    });
   }
 
   if (newPrice <= currentPrice) {
-    throw new Error(
-      "New plan should be more expensive than current plan for upgrade"
-    );
+    throw new trpcError({
+      code: "BAD_REQUEST",
+      message:
+        "New plan should be more expensive than current plan for upgrade.",
+    });
   }
 
   const dailyCostCurrentPlan = currentPrice / 30;

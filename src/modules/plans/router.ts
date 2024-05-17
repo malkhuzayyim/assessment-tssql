@@ -87,7 +87,10 @@ export const plans = router({
       const { currentPlanId, newPlanId, daysRemaining } = input;
 
       if (currentPlanId === newPlanId) {
-        throw new Error("Plans can not be same.");
+        throw new trpcError({
+          code: "BAD_REQUEST",
+          message: "Plans can not be same.",
+        });
       }
 
       const newPlan = await db.query.plans.findFirst({
@@ -99,11 +102,17 @@ export const plans = router({
       });
 
       if (!newPlan) {
-        throw new Error("Invalid a plan to upgrade to.");
+        throw new trpcError({
+          code: "NOT_FOUND",
+          message: "Invalid a plan to upgrade to.",
+        });
       }
 
       if (!currentPlan) {
-        throw new Error("Invalid a plan to upgrade from.");
+        throw new trpcError({
+          code: "NOT_FOUND",
+          message: "Invalid a plan to upgrade from.",
+        });
       }
 
       const upgradePrice = upgradePriceCalculation({
