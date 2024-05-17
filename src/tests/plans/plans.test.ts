@@ -3,9 +3,11 @@ import { db, schema } from "../../db/client";
 import { createAuthenticatedCaller, createCaller } from "../helpers/utils";
 import resetDb from "../helpers/resetDb";
 import { eq } from "drizzle-orm";
+import { trpcError } from "../../trpc/core";
 
 describe("plans routes", async () => {
   let adminId: number;
+  let userId: number;
 
   beforeAll(async () => {
     await resetDb();
@@ -31,11 +33,16 @@ describe("plans routes", async () => {
     await createCaller({}).auth.register(admin);
     await createCaller({}).auth.register(user);
 
+    const userInDb = await db.query.users.findFirst({
+      where: eq(schema.users.email, user.email),
+    });
+
     const adminInDb = await db.query.users.findFirst({
       where: eq(schema.users.email, admin.email),
     });
 
     adminId = adminInDb!.id;
+    userId = userInDb!.id;
   });
 
   describe("Create Plan", async () => {
@@ -47,6 +54,17 @@ describe("plans routes", async () => {
       expect(planInDb!.name).toBe(plan.name);
       expect(planInDb!.price).toBe(plan.price);
       expect(planInDb!.id).toBeDefined();
+    });
+
+    it("should throw an error if user type is not an admin", async () => {
+      const userCaller = createAuthenticatedCaller({ userId: userId });
+      await expect(
+        userCaller.plans.create({ name: "Basic", price: 10 })
+      ).rejects.toThrowError(
+        new trpcError({
+          code: "UNAUTHORIZED",
+        })
+      );
     });
   });
 
