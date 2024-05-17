@@ -134,7 +134,23 @@ describe("plans routes", async () => {
     });
 
     it("should throw error if current plan does not exist", async () => {
+      const adminCaller = createAuthenticatedCaller({ userId: adminId });
+      const plan = { name: "Basic", price: 10 };
 
+      const planInDb = await adminCaller.plans.create(plan);
+
+      await expect(
+        adminCaller.plans.calculateUpgradePrice({
+          currentPlanId: 1000,
+          newPlanId: planInDb!.id,
+          daysRemaining: 15,
+        })
+      ).rejects.toThrowError(
+        new trpcError({
+          code: "NOT_FOUND",
+          message: "Invalid a plan to upgrade from.",
+        })
+      );
     });
 
     it("should throw error if new plan does not exist", async () => {
