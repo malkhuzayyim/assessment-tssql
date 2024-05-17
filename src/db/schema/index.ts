@@ -101,39 +101,39 @@ export const plans = sqliteTable("plans", {
   price: real("price").notNull(),
 });
 
-export const subscriptions = sqliteTable("subscriptions", {
-  id: integer("id").primaryKey().notNull(),
-  teamId: integer("teamId")
-    .notNull()
-    .references(() => teams.id, { onDelete: "cascade", onUpdate: "restrict" }),
-  planId: integer("planId")
-    .notNull()
-    .references(() => plans.id, { onDelete: "restrict", onUpdate: "restrict" }),
-  isActive: boolean("isActive").notNull(),
-  createdAt: timestamp("createdAt").notNull(),
-});
+// export const subscriptions = sqliteTable("subscriptions", {
+//   id: integer("id").primaryKey().notNull(),
+//   teamId: integer("teamId")
+//     .notNull()
+//     .references(() => teams.id, { onDelete: "cascade", onUpdate: "restrict" }),
+//   planId: integer("planId")
+//     .notNull()
+//     .references(() => plans.id, { onDelete: "restrict", onUpdate: "restrict" }),
+//   isActive: boolean("isActive").notNull(),
+//   createdAt: timestamp("createdAt").notNull(),
+// });
 
-export const orders = sqliteTable("orders", {
-  id: integer("id").primaryKey().notNull(),
-  subscriptionId: integer("subscriptionId")
-    .notNull()
-    .references(() => subscriptions.id, {
-      onDelete: "cascade",
-      onUpdate: "restrict",
-    }),
-  amount: real("amount").notNull(),
-  paymentStatus: text("paymentStatus").notNull(),
-  createdAt: timestamp("createdAt").notNull(),
-});
+// export const orders = sqliteTable("orders", {
+//   id: integer("id").primaryKey().notNull(),
+//   subscriptionId: integer("subscriptionId")
+//     .notNull()
+//     .references(() => subscriptions.id, {
+//       onDelete: "cascade",
+//       onUpdate: "restrict",
+//     }),
+//   amount: real("amount").notNull(),
+//   paymentStatus: text("paymentStatus").notNull(),
+//   createdAt: timestamp("createdAt").notNull(),
+// });
 
-export const subscriptionActivations = sqliteTable("subscriptionActivations", {
-  id: integer("id").primaryKey().notNull(),
-  orderId: integer("orderId")
-    .notNull()
-    .references(() => orders.id, {
-      onDelete: "restrict",
-      onUpdate: "restrict",
-    }),
-  activationDate: timestamp("activationDate").notNull(),
-  billingCycle: text("billingCycle", { enum: ["month", "year"] }).notNull(),
-});
+// export const subscriptionActivations = sqliteTable("subscriptionActivations", {
+//   id: integer("id").primaryKey().notNull(),
+//   orderId: integer("orderId")
+//     .notNull()
+//     .references(() => orders.id, {
+//       onDelete: "restrict",
+//       onUpdate: "restrict",
+//     }),
+//   activationDate: timestamp("activationDate").notNull(),
+//   billingCycle: text("billingCycle", { enum: ["month", "year"] }).notNull(),
+// });
