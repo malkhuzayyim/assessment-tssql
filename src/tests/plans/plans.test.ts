@@ -100,6 +100,15 @@ describe("plans routes", async () => {
   });
 
   describe("Read Plans", async () => {
-    it("should allow anyone to read all plans", async () => {});
+    it("should allow anyone to read all plans", async () => {
+      const adminCaller = createAuthenticatedCaller({ userId: adminId });
+      const plan = { name: "Basic", price: 10 };
+      await adminCaller.plans.create(plan);
+
+      const publicCaller = createCaller({});
+
+      const plans = await publicCaller.plans.get();
+      expect(plans.length).toBeGreaterThan(0);
+    });
   });
 });
