@@ -48,7 +48,7 @@ describe("plans routes", async () => {
   describe("Create Plan", async () => {
     it("should allow an admin user type to create a plan", async () => {
       const adminCaller = createAuthenticatedCaller({ userId: adminId });
-      const plan = { name: "Basic", price: 10 }
+      const plan = { name: "Basic", price: 10 };
       const planInDb = await adminCaller.plans.create(plan);
       expect(planInDb).toBeDefined();
       expect(planInDb!.name).toBe(plan.name);
@@ -68,7 +68,18 @@ describe("plans routes", async () => {
     });
   });
 
-  describe("Update Plan", async () => {});
+  describe("Update Plan", async () => {
+    it("should allow an admin user type to update a plan", async () => {
+      const adminCaller = createAuthenticatedCaller({ userId: adminId });
+      const plan = { name: "Basic", price: 10 };
+      const planInDb = await adminCaller.plans.create(plan);
+      const result = await adminCaller.plans.update({
+        id: planInDb!.id,
+        name: "Standard",
+      });
+      expect(result.success).toBe(true);
+    });
+  });
 
   describe("Read Plans", async () => {
     it("should allow anyone to read all plans", async () => {});
