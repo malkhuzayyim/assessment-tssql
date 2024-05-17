@@ -1,4 +1,4 @@
-import { router, protectedProcedure, trpcError } from "../../trpc/core";
+import { router, protectedProcedure, trpcError, publicProcedure } from "../../trpc/core";
 import { z } from "zod";
 import { db, schema } from "../../db/client";
 import { eq } from "drizzle-orm";
@@ -60,4 +60,13 @@ export const plans = router({
         throw error;
       }
     }),
+  get: publicProcedure.query(async () => {
+    try {
+      const plans = await db.query.plans.findMany();
+      return plans;
+    } catch (error) {
+      console.error("Error fetching plans", error);
+      return [];
+    }
+  }),
 });
