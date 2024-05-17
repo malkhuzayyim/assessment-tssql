@@ -1,4 +1,9 @@
-import { router, protectedProcedure, trpcError, publicProcedure } from "../../trpc/core";
+import {
+  router,
+  protectedProcedure,
+  trpcError,
+  publicProcedure,
+} from "../../trpc/core";
 import { z } from "zod";
 import { db, schema } from "../../db/client";
 import { eq } from "drizzle-orm";
