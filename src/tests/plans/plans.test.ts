@@ -111,4 +111,42 @@ describe("plans routes", async () => {
       expect(plans.length).toBeGreaterThan(0);
     });
   });
+
+  describe("Prorated Upgrade Price Calculation", async () => {
+    it("should throw error if plans are the same", async () => {
+      const adminCaller = createAuthenticatedCaller({ userId: adminId });
+      const plan = { name: "Basic", price: 10 };
+
+      const planInDb = await adminCaller.plans.create(plan);
+
+      await expect(
+        adminCaller.plans.calculateUpgradePrice({
+          currentPlanId: planInDb!.id,
+          newPlanId: planInDb!.id,
+          daysRemaining: 15,
+        })
+      ).rejects.toThrowError(
+        new trpcError({
+          code: "BAD_REQUEST",
+          message: "Plans can not be same.",
+        })
+      );
+    });
+
+    it("should throw error if current plan does not exist", async () => {
+
+    });
+
+    it("should throw error if new plan does not exist", async () => {
+
+    });
+
+    it("should throw error if new plan is not more expensive", async () => {
+
+    });
+
+    it("should calculate prorated upgrade price correctly", async () => {
+
+    });
+  });
 });
