@@ -38,8 +38,8 @@ export const plans = router({
     .input(
       z.object({
         id: z.number(),
-        name: z.string(),
-        price: z.number(),
+        name: z.string().optional(),
+        price: z.number().optional(),
       })
     )
     .mutation(async ({ ctx: { user }, input }) => {
