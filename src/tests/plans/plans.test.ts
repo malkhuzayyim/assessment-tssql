@@ -174,7 +174,48 @@ describe("plans routes", async () => {
     });
 
     it("should throw error if new plan is not more expensive", async () => {
+      const adminCaller = createAuthenticatedCaller({ userId: adminId });
+      const currentPlan = { name: "Basic", price: 10 };
+      const newPlan = { name: "Standard", price: 5 };
 
+      const currentPlanInDb = await adminCaller.plans.create(currentPlan);
+      const newPlanPlanInDb = await adminCaller.plans.create(newPlan);
+
+      await expect(
+        adminCaller.plans.calculateUpgradePrice({
+          currentPlanId: currentPlanInDb!.id,
+          newPlanId: newPlanPlanInDb!.id,
+          daysRemaining: 15,
+        })
+      ).rejects.toThrowError(
+        new trpcError({
+          code: "BAD_REQUEST",
+          message:
+            "New plan should be more expensive than current plan for upgrade.",
+        })
+      );
+    });
+
+    it("should throw error if days remaining value is negative", async () => {
+      const adminCaller = createAuthenticatedCaller({ userId: adminId });
+      const currentPlan = { name: "Basic", price: 10 };
+      const newPlan = { name: "Standard", price: 15 };
+
+      const currentPlanInDb = await adminCaller.plans.create(currentPlan);
+      const newPlanPlanInDb = await adminCaller.plans.create(newPlan);
+
+      await expect(
+        adminCaller.plans.calculateUpgradePrice({
+          currentPlanId: currentPlanInDb!.id,
+          newPlanId: newPlanPlanInDb!.id,
+          daysRemaining: -15,
+        })
+      ).rejects.toThrowError(
+        new trpcError({
+          code: "BAD_REQUEST",
+          message: "Days remaining cannot be negative.",
+        })
+      );
     });
 
     it("should calculate prorated upgrade price correctly", async () => {
