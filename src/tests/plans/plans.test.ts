@@ -79,6 +79,24 @@ describe("plans routes", async () => {
       });
       expect(result.success).toBe(true);
     });
+
+    it("should throw an error if user type is not an admin", async () => {
+      const adminCaller = createAuthenticatedCaller({ userId: adminId });
+      const userCaller = createAuthenticatedCaller({ userId: userId });
+
+      const plan = { name: "Basic", price: 10 };
+      const planInDb = await adminCaller.plans.create(plan);
+      await expect(
+        userCaller.plans.update({
+          id: planInDb!.id,
+          name: "Standard",
+        })
+      ).rejects.toThrowError(
+        new trpcError({
+          code: "UNAUTHORIZED",
+        })
+      );
+    });
   });
 
   describe("Read Plans", async () => {
