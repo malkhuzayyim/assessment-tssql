@@ -28,7 +28,7 @@ describe("subscriptions routes", async () => {
     adminId = adminInDb!.id;
   });
 
-  describe("Subscription Creation", async () => {
+  describe("subscription creation", async () => {
     /*
     checks the basic functionality of creating and 
     saving a Subscription entity in the database.
