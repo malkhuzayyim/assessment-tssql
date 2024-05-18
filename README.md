@@ -79,5 +79,13 @@ If you were to introduce two more props to plans:
 
 How would this affect the current plan upgrade calculation?
 
-### answer here:
+### <a href="https://linkedin.com/in/alihewiagh37" target="_blank">Ali Hewiagh's</a> Answer:
+Introducing "defaultUsers" and "pricePerUser" properties would require us to consider the number of users in the subscription and any additional price per user.
+
+In order for us to calculate the total upgrade price, we need to:
+
+1. Calculate prorated price calculation which will be based on the number of days remaining (For both current and new plans).
+2. Calculate prorated price for any additional user based on the number of days remaining (For both current and new plans). 
+3. Sum the base price and additional user price (For both current and new plans).
+3. The **total upgrade price** will be the deference between the prorated price of the new plan and the current plan. 
 ---
