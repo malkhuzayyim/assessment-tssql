@@ -24,6 +24,11 @@ export const plans = router({
         const userInDb = await db.query.users.findFirst({
           where: eq(schema.users.id, userId),
         });
+
+        /* can be remove and create an adminProcedure
+        to be used instead of protectedProcedure
+        for code reusability, scalability and many more
+        advantages  */
         if (!userInDb!.isAdmin) {
           throw new trpcError({
             code: "UNAUTHORIZED",
