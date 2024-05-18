@@ -28,12 +28,12 @@ describe("order routes", async () => {
     adminId = adminInDb!.id;
   });
 
-  /*
+  describe("order creation", async () => {
+    /*
     checks the basic functionality of creating 
     an order entity in the database and associate
     it to a subscription.
-  */
-  describe("order creation", async () => {
+    */
     it("should create an order", async () => {});
   });
 
